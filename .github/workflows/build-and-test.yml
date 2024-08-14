@@ -5,19 +5,6 @@ on:
 
   # Allows to be called by another workflow
   workflow_call:
-    secrets:
-      NEXT_URL:
-        description: 'Next URL.'
-        default: 'http://localhost:3000'
-      WORDPRESS_PATH:
-        required: true
-        description: 'WordPress absolute path on remote server.'
-      WORDPRESS_URL:
-        description: 'WordPress URL'
-        default: 'http://localhost'
-      WORDPRESS_THEME_NAME:
-        description: 'WordPress folder theme name.'
-        default: 'http://localhost:3000'
 
 jobs:
   build_wp:
@@ -26,7 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/build-theme
         with:
-          WORDPRESS_THEME_NAME: ${{ secrets.WORDPRESS_THEME_NAME }}
+          WORDPRESS_THEME_NAME: ${{ secrets.WORDPRESS_THEME_NAME }} || 'starterpack'
+          WORDPRESS_URL: 'http://localhost'
 
   start_wp:
     needs: build_wp
@@ -41,8 +29,8 @@ jobs:
     steps:
       - uses: ./.github/actions/build-frontend
         with:
-          WORDPRESS_PATH: ${{ secrets.WORDPRESS_PATH }}
-          WORDPRESS_URL: ${{ secrets.WORDPRESS_URL }}
+          NEXT_URL: 'http://localhost:3000'
+          WORDPRESS_URL: 'http://localhost'
 
   start_next:
     needs: build_next
