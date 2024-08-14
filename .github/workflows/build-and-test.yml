@@ -4,7 +4,7 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  build_wp:
+  build, start and test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,9 +18,9 @@ jobs:
 
       - uses: ./.github/actions/build-frontend
 
-      - name: Start Next
+      - name: Start Next is a thread
         shell: bash
-        run: '&npm run start'
+        run: 'npm run start &'
 
       - name: TEST
         shell: bash
