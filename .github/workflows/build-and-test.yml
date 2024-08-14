@@ -22,7 +22,7 @@ jobs:
 
       - name: Start Next as a thread
         shell: bash
-        run: 'npm run start &'
+        run: 'npm run start -- -p 3000 &'
 
       - name: Wordpress first use
         shell: bash
