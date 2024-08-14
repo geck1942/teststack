@@ -8,33 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/build-theme
-        with:
-          WORDPRESS_THEME_NAME: ${{ secrets.WORDPRESS_THEME_NAME }} || 'starterpack'
-          WORDPRESS_URL: 'http://localhost'
 
-  start_wp:
-    needs: build_wp
-    runs-on: ubuntu-latest
-    steps:
+      - uses: ./.github/actions/build-theme
+
       - name: Start WP
         shell: bash
         run: npm run start
         working-directory: ./wordpress
 
-  build_next:
-    needs: start_wp
-    runs-on: ubuntu-latest
-    steps:
       - uses: ./.github/actions/build-frontend
-        with:
-          NEXT_URL: 'http://localhost:3000'
-          WORDPRESS_URL: 'http://localhost'
 
-  start_next:
-    needs: build_next
-    runs-on: ubuntu-latest
-    steps:
       - name: Start Next
         shell: bash
         run: npm run start
