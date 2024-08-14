@@ -20,4 +20,12 @@ jobs:
 
       - name: Start Next
         shell: bash
-        run: npm run start
+        run: '&npm run start'
+
+      - name: TEST
+        shell: bash
+        run: wget http://localhost:3000/
+
+      - name: Stop Next
+        shell: bash
+        run: killall npm
