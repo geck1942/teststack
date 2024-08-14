@@ -3,9 +3,6 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
-  # Allows to be called by another workflow
-  workflow_call:
-
 jobs:
   build_wp:
     runs-on: ubuntu-latest
