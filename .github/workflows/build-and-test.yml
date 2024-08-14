@@ -24,7 +24,10 @@ jobs:
 
       - name: TEST
         shell: bash
-        run: wget http://localhost:3000/
+        run: |
+          sleep 5
+          curl http://localhost/wp-admin/post-new.php?post_type=wgg_preview&action=edit&wpGraphqlGutenbergServer=true
+          curl http://localhost:3000/
 
       - name: Stop Next
         shell: bash
