@@ -9,13 +9,8 @@ runs:
 
     - name: Install node dependencies
       shell: bash
-      run: |
-        npm install --frozen-lockfile
-        npm --prefix ./wordpress install --frozen-lockfile
-
-    - name: Build frontend
-      shell: bash
-      run: npm run build
+      run: npm install --frozen-lockfile
+      working-directory: ./wordpress
 
     - name: Build assets
       shell: bash

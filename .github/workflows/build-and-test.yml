@@ -7,17 +7,20 @@ on:
   workflow_call:
     secrets:
       NEXT_URL:
-        required: true
         description: 'Next URL.'
+        default: 'http://localhost:3000'
       WORDPRESS_PATH:
         required: true
         description: 'WordPress absolute path on remote server.'
+      WORDPRESS_URL:
+        description: 'WordPress URL'
+        default: 'http://localhost'
       WORDPRESS_THEME_NAME:
         description: 'WordPress folder theme name.'
-        required: true
+        default: 'http://localhost:3000'
 
 jobs:
-  build:
+  build_wp:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,41 +28,25 @@ jobs:
         with:
           WORDPRESS_THEME_NAME: ${{ secrets.WORDPRESS_THEME_NAME }}
 
-  # provision:
-  #   runs-on: ubuntu-latest
-  #   needs: [theme]
-  #   steps:
-  #     - uses: actions/checkout@v4
+  start_wp:
+    needs: build_wp
+    steps:
+      - name: Start WP
+        shell: bash
+        run: npm run start
+        working-directory: ./wordpress
 
-  #     - name: deploy composer
-  #       uses: easingthemes/ssh-deploy@main
-  #       with:
-  #         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-  #         ARGS: '-raultzv --delete'
-  #         REMOTE_USER: ${{ secrets.SSH_USER }}
-  #         REMOTE_HOST: ${{ secrets.SSH_HOST }}
-  #         REMOTE_PORT: ${{ secrets.SSH_PORT }}
-  #         SOURCE: './wordpress/composer.json ./wordpress/composer.lock'
-  #         TARGET: ${{ secrets.WORDPRESS_PATH }}
+  build_next:
+    needs: start_wp
+    steps:
+      - uses: ./.github/actions/build-frontend
+        with:
+          WORDPRESS_PATH: ${{ secrets.WORDPRESS_PATH }}
+          WORDPRESS_URL: ${{ secrets.WORDPRESS_URL }}
 
-  #     - id: ssh
-  #       uses: kuuak/ssh-action@main
-  #       with:
-  #         SSH_USER: ${{ secrets.SSH_USER }}
-  #         SSH_HOST: ${{ secrets.SSH_HOST }}
-  #         SSH_PORT: ${{ secrets.SSH_PORT }}
-  #         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-
-  #     - name: Require composer depedencies
-  #       shell: bash
-  #       run: ssh ${{ steps.ssh.outputs.SERVER }} "cd ${{ secrets.WORDPRESS_PATH }}; composer install --no-dev"
-
-  #     - name: Execute provisiton script
-  #       shell: bash
-  #       run: |
-  #         ssh ${{ steps.ssh.outputs.SERVER }} \
-  #           "cd ${{ secrets.WORDPRESS_PATH }}; \
-  #           env THEME_NAME=${{ secrets.WORDPRESS_THEME_NAME }} \
-  #           NEXT_URL=${{ secrets.NEXT_URL }} \
-  #           WORDPRESS_PATH=${{ secrets.WORDPRESS_PATH }} \
-  #           /bin/bash -s " < ./wordpress/scripts/provision.sh
+  start_next:
+    needs: build_next
+    steps:
+      - name: Start Next
+        shell: bash
+        run: npm run start
