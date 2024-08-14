@@ -4,31 +4,39 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  build_start_and_test:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: ./.github/actions/build-theme
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            node-
+
+      - name: Build WP Theme
+        uses: ./.github/actions/build-theme
 
       - name: Start WP
         shell: bash
         run: npm run start
         working-directory: ./wordpress
 
-      - uses: ./.github/actions/build-frontend
+      - name: Build Next Frontend
+        uses: ./.github/actions/build-frontend
 
-      - name: Start Next is a thread
+      - name: Start Next as a thread
         shell: bash
         run: 'npm run start &'
 
-      - name: TEST
+      - name: Wordpress first use
         shell: bash
         run: |
-          sleep 5
           curl http://localhost/wp-admin/post-new.php?post_type=wgg_preview&action=edit&wpGraphqlGutenbergServer=true
-          curl http://localhost:3000/
 
-      - name: Stop Next
+      - name: Simple HTTP Test
         shell: bash
-        run: killall npm
+        run: sh ./.github/actions/tests/simple-http-test.sh
