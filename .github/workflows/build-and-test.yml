@@ -15,6 +15,7 @@ jobs:
 
   start_wp:
     needs: build_wp
+    runs-on: ubuntu-latest
     steps:
       - name: Start WP
         shell: bash
@@ -23,6 +24,7 @@ jobs:
 
   build_next:
     needs: start_wp
+    runs-on: ubuntu-latest
     steps:
       - uses: ./.github/actions/build-frontend
         with:
@@ -31,6 +33,7 @@ jobs:
 
   start_next:
     needs: build_next
+    runs-on: ubuntu-latest
     steps:
       - name: Start Next
         shell: bash
