@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Wait for NPM run dev to start
+sleep 5
 # URL of the page to check
 URL="http://localhost:3000/blog/hello-world/"
 
