@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Wait for NPM run dev to start
-sleep 5
+sleep 2
 # URL of the page to check
-URL="http://localhost:3000/"
-CONTENT="Home"
+URL="http://localhost:3000/blog/hello-world/"
+CONTENT="Hello world!"
 
 # Perform the HTTP request, capturing the HTTP status and response content separately
 response=$(curl --write-out "%{http_code}" --silent --output response.txt $URL)
