@@ -19,10 +19,12 @@ jobs:
 
       # Call the wordpress backend to trigger some initialization:
       # - GraphQL Gutenberg Block registration
+      # - Copy .env files
       - name: Wordpress first use
         shell: bash
         run: |
           curl http://localhost/wp-admin/post-new.php?post_type=wgg_preview&action=edit&wpGraphqlGutenbergServer=true
+          cp .env.local.example .env.local
 
       - name: Build Next Frontend
         uses: ./.github/actions/build-frontend
