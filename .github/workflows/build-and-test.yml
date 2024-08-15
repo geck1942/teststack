@@ -17,17 +17,19 @@ jobs:
         run: npm run start
         working-directory: ./wordpress
 
+      # Call the wordpress backend to trigger some initialization:
+      # - GraphQL Gutenberg Block registration
+      - name: Wordpress first use
+        shell: bash
+        run: |
+          curl http://localhost/wp-admin/post-new.php?post_type=wgg_preview&action=edit&wpGraphqlGutenbergServer=true
+
       - name: Build Next Frontend
         uses: ./.github/actions/build-frontend
 
       - name: Start Next as a thread
         shell: bash
-        run: 'npm run start -- -p 3000 &'
-
-      - name: Wordpress first use
-        shell: bash
-        run: |
-          curl http://localhost/wp-admin/post-new.php?post_type=wgg_preview&action=edit&wpGraphqlGutenbergServer=true
+        run: 'npm run dev -- -p 3000 &'
 
       - name: Simple HTTP Test
         shell: bash
