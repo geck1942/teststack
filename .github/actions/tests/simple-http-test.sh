@@ -18,7 +18,7 @@ if [ "$response" -eq 200 ]; then
     echo "HTTP status is 200, checking content..."
 
     # Check if the content contains the desired text
-    if echo "$response_content" | grep -q $CONTENT; then
+    if echo "$response_content" | grep -q "$CONTENT"; then
         echo "Content check passed. Page contains '$CONTENT'"
         exit 0 # Success
     else
