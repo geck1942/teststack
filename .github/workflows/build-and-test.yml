@@ -31,7 +31,7 @@ jobs:
 
       - name: Start Next as a thread
         shell: bash
-        run: 'npm run start -- -p 3000 &'
+        run: 'npm run dev -- -p 3000 &'
 
       - name: Simple HTTP Test
         shell: bash

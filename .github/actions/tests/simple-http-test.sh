@@ -1,17 +1,14 @@
 #!/bin/sh
 
 # Wait for NPM run dev to start
-sleep 2
+sleep 5
 # URL of the page to check
-URL="http://localhost:3000/"
-CONTENT="Home"
+URL="http://localhost:3000/blog/hello-world/"
+CONTENT="Hello world!"
 
 # Perform the HTTP request, capturing the HTTP status and response content separately
 response=$(curl --write-out "%{http_code}" --silent --output response.txt $URL)
 response_content=$(<response.txt)
-
-# Clean up the response file
-rm response.txt
 
 # Check for HTTP status 200
 if [ "$response" -eq 200 ]; then
@@ -23,11 +20,12 @@ if [ "$response" -eq 200 ]; then
         exit 0 # Success
     else
         echo "Content check failed. Page does not contain '$CONTENT'"
-        exit 1 # Fail
+		    echo "$response_content"  # Optionally, show response content for other statuses
     fi
 else
     echo "HTTP status is not 200. Received status code: $response"
     echo "$response_content"  # Optionally, show response content for other statuses
-    exit 1 # Fail
 fi
+
+exit 1 # Fail
 
