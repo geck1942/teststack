@@ -4,6 +4,8 @@ on:
     types: [opened, reopened, synchronize]
     branches:
       - '*' # Trigger on pull requests targeting any branch
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   # Run the test procedure to validate the code being pushed.
@@ -14,6 +16,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check github environment secrets and variables
+        run: |
+          echo "Checking secrets and variables for '${{ matrix.environment }}.' environment..."
+          missing_vars=0
+          for var in COMPOSER_GITHUB_TOKEN WORDPRESS_THEME_NAME RELEASE_BELT_USER RELEASE_BELT_PWD; do
+            if [ -z "${!var}" ]; then
+              echo "$var is not set."
+              missing_vars=$((missing_vars+1))
+            else
+              echo "$var is set to '${!var}'."
+            fi
+          done
+
+          if [ $missing_vars -ne 0 ]; then
+            echo "inputs_checked=false" >> $GITHUB_OUTPUT
+            echo "Error: $missing_vars variables are missing."
+            exit 1
+          else
+            echo "inputs_checked=true" >> $GITHUB_OUTPUT
+          fi
+        env:
+          WORDPRESS_THEME_NAME: ${{ vars.WORDPRESS_THEME_NAME }}
+          RELEASE_BELT_USER: ${{ vars.RELEASE_BELT_USER }}
+          RELEASE_BELT_PWD: ${{ secrets.RELEASE_BELT_PWD }}
+          COMPOSER_GITHUB_TOKEN: ${{ secrets.COMPOSER_GITHUB_TOKEN }}
+
       - name: Build WP Theme
         uses: ./.github/actions/build-theme
 
@@ -21,7 +49,10 @@ jobs:
         shell: bash
         run: npm run start
         working-directory: ./wordpress
-
+        env:
+          RELEASE_BELT_USER: ${{ vars.RELEASE_BELT_USER }}
+          RELEASE_BELT_PWD: ${{ secrets.RELEASE_BELT_PWD }}
+          COMPOSER_GITHUB_TOKEN: ${{ secrets.COMPOSER_GITHUB_TOKEN }}
       # Call the wordpress backend to trigger some initialization:
       # - GraphQL Gutenberg Block registration
       # - Copy .env files
