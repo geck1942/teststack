@@ -8,6 +8,7 @@ import {
 import { gql } from '@/utils';
 
 export const slug = 'single-post';
+qewrgwrt();
 
 export const fragment = gql`
 	fragment singlePostFragment on Post {
